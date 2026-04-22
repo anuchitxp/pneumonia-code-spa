@@ -435,13 +435,20 @@
         // Sort items from Max to Min adjRW
         tier.items.sort((a, b) => b.adjRWValue - a.adjRWValue);
 
-        const section = document.createElement('section');
+        const section = document.createElement('details');
         section.className = 'tier-section';
         section.id = `tier-${tierNum}-section`;
+        
+        // Auto-collapse on mobile for UX, except Tier 1
+        if (window.innerWidth > 600 || tierNum == 1) {
+          section.open = true;
+        }
 
-        const header = document.createElement('div');
+        const header = document.createElement('summary');
         header.className = 'tier-header';
-        header.innerHTML = `<h3>${tier.name}</h3>`;
+        header.style.cursor = 'pointer';
+        header.style.outline = 'none';
+        header.innerHTML = `<h3 style="display:inline-block">${tier.name}</h3>`;
         section.appendChild(header);
 
         const checkboxGroup = document.createElement('div');
