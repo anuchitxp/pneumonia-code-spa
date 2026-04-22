@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pneumonia Coder Demystified</title>
+  <style>
+    :root {
+      --bg-color: #f2f7f5;
+      --panel-bg: #ffffff;
+      --text-main: #2d3748;
+      --text-muted: #4a5568;
+      --accent: #007646; /* Official MOPH Green */
+      --danger: #e53e3e;
+      --success: #00965e; /* Lighter MOPH Green for tags */
+      --warning: #d4a017; /* Institutional Gold/Yellow */
+      --border: #cbd5e0;
+      --disabled-bg: #edf2f7;
+      --disabled-text: #a0aec0;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      line-height: 1.6;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      min-height: 100vh;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+      gap: 2rem;
+    }
+
+    header {
+      text-align: center;
+      border-bottom: 2px solid var(--border);
+      padding-bottom: 1rem;
+    }
+
+    h1 {
+      color: var(--accent);
+      font-size: 2.2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    h2.subtitle {
+      color: var(--text-muted);
+      font-size: 1.1rem;
+      font-weight: 500;
+    }
+
+    .tiers-container {
+      display: grid;
+      gap: 1.5rem;
+    }
+
+    .tier-section {
+      background-color: var(--panel-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.5rem;
+      transition: opacity 0.3s ease;
+    }
+
+    .tier-section.disabled {
+      opacity: 0.4;
+      pointer-events: none;
+      background-color: var(--disabled-bg);
+    }
+
+    .tier-header {
+      margin-bottom: 1rem;
+      border-bottom: 1px dashed var(--border);
+      padding-bottom: 0.5rem;
+    }
+
+    .tier-header h3 {
+      color: var(--warning);
+      font-size: 1.2rem;
+    }
+
+    .checkbox-group {
+      display: grid;
+      gap: 0.8rem;
+    }
+
+    .checkbox-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.8rem;
+    }
+
+    .checkbox-item input[type="checkbox"] {
+      appearance: none;
+      background-color: transparent;
+      border: 2px solid var(--text-muted);
+      border-radius: 4px;
+      width: 1.2rem;
+      height: 1.2rem;
+      margin-top: 0.2rem;
+      cursor: pointer;
+      position: relative;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+    }
+
+    .checkbox-item input[type="checkbox"]:checked {
+      background-color: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .checkbox-item input[type="checkbox"]:checked::after {
+      content: '✔';
+      color: var(--bg-color);
+      position: absolute;
+      font-size: 0.9rem;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .item-content {
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+
+    .item-title {
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .item-evidence {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 0.2rem;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.1rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.75rem;
+      font-weight: bold;
+      background-color: var(--success);
+      color: var(--bg-color);
+    }
+
+    .badge-code {
+      background-color: var(--text-muted);
+      color: #fff;
+    }
+
+    .summary-box {
+      background-color: var(--panel-bg);
+      border: 1px solid var(--accent);
+      border-radius: 8px;
+      padding: 1.5rem;
+      position: sticky;
+      bottom: 20px;
+      box-shadow: 0 -10px 20px rgba(0,0,0,0.3);
+    }
+
+    .summary-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.5rem;
+    }
+
+    .summary-header h3 {
+      color: var(--accent);
+    }
+
+    .total-rw {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: var(--success);
+    }
+
+    #summaryText {
+      background-color: var(--bg-color);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 1rem;
+      font-family: 'Consolas', 'Courier New', monospace;
+      font-size: 0.9rem;
+      color: var(--text-main);
+      white-space: pre-wrap;
+      min-height: 120px;
+      margin-bottom: 1rem;
+    }
+
+    .actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: flex-end;
+    }
+
+    button {
+      padding: 0.6rem 1.2rem;
+      border: none;
+      border-radius: 4px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 0.9rem;
+    }
+
+    .btn-copy {
+      background-color: var(--accent);
+      color: var(--bg-color);
+    }
+
+    .btn-copy:hover {
+      background-color: #d1b3ff;
+    }
+
+    .btn-reset {
+      background-color: var(--danger);
+      color: var(--text-main);
+    }
+
+    .btn-reset:hover {
+      background-color: #ff7777;
+    }
+
+    /* Notification */
+    #notification {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      background-color: var(--success);
+      color: var(--bg-color);
+      padding: 10px 20px;
+      border-radius: 4px;
+      font-weight: bold;
+      opacity: 0;
+      transform: translateY(-20px);
+      transition: all 0.3s ease;
+      pointer-events: none;
+    }
+    
+    #notification.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .credits {
+      margin-top: 0.5rem;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+    }
+
+    /* Mobile Responsiveness */
+    @media (max-width: 600px) {
+      body {
+        padding: 10px;
+        gap: 15px;
+      }
+      h1 {
+        font-size: 1.6rem;
+      }
+      .actions {
+        flex-direction: column;
+      }
+      .actions button {
+        width: 100%;
+      }
+      .credits {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      .item-title {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .summary-header {
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-start;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>Pneumonia Coder Demystified</h1>
+    <h2 class="subtitle">Clinical Documentation Wizard</h2>
+    <div class="credits">
+      <span class="version">v0.1.0 (2026-04-22)</span>
+      <span class="developer">Developed by Dr. Anuchit Wongphen</span>
+    </div>
+  </header>
+
+  <main class="tiers-container" id="tiersContainer">
+    <!-- Tiers will be dynamically rendered here -->
+  </main>
+
+  <aside class="summary-box">
+    <div class="summary-header">
+      <h3>Discharge Summary</h3>
+      <div class="total-rw">Total adjRW: <span id="totalRwValue">0.00</span></div>
+    </div>
+    <div id="summaryText">Select clinical evidence above to generate documentation...</div>
+    <div class="actions">
+      <button class="btn-reset" id="btnReset">Reset Form</button>
+      <button class="btn-copy" id="btnCopy">Copy to Clipboard</button>
+    </div>
+  </aside>
+
+  <div id="notification">Copied!</div>
+
+  <script>
+    // System Data Structure
+    const codingData = [
+      // Tier 1
+      { id: 't1-1', tier: 1, category: "Tier 1: Pathogen-Specific", code: "J13", description: "Streptococcus pneumoniae", evidenceNeeded: "Positive Sputum/Blood Culture", adjRWValue: 1.5, isModifier: false },
+      { id: 't1-2', tier: 1, category: "Tier 1: Pathogen-Specific", code: "J14", description: "Haemophilus influenzae", evidenceNeeded: "Positive Culture", adjRWValue: 1.5, isModifier: false },
+      { id: 't1-3', tier: 1, category: "Tier 1: Pathogen-Specific", code: "J15.0", description: "Klebsiella pneumoniae", evidenceNeeded: "Positive Culture", adjRWValue: 1.8, isModifier: false },
+      { id: 't1-4', tier: 1, category: "Tier 1: Pathogen-Specific", code: "J15.1", description: "Pseudomonas aeruginosa", evidenceNeeded: "Positive Culture", adjRWValue: 2.0, isModifier: false },
+      { id: 't1-5', tier: 1, category: "Tier 1: Pathogen-Specific", code: "J15.2", description: "Staphylococcus aureus", evidenceNeeded: "Positive Culture", adjRWValue: 1.8, isModifier: false },
+      { id: 't1-6', tier: 1, category: "Tier 1: Pathogen-Specific", code: "J15.5", description: "Escherichia coli", evidenceNeeded: "Positive Culture", adjRWValue: 1.6, isModifier: false },
+      { id: 't1-7', tier: 1, category: "Tier 1: Pathogen-Specific", code: "J15.7", description: "Mycoplasma pneumoniae", evidenceNeeded: "Mycoplasma IgM/PCR+", adjRWValue: 1.2, isModifier: false },
+      { id: 't1-8', tier: 1, category: "Tier 1: Pathogen-Specific", code: "J10.0", description: "Seasonal influenza with pneumonia", evidenceNeeded: "Flu PCR/RDT+", adjRWValue: 1.0, isModifier: false },
+      { id: 't1-9', tier: 1, category: "Tier 1: Pathogen-Specific", code: "A48.1", description: "Legionnaires disease", evidenceNeeded: "Legionella UAg+ or cx+", adjRWValue: 1.5, isModifier: false },
+      { id: 't1-10', tier: 1, category: "Tier 1: Pathogen-Specific", code: "B59", description: "Pneumocystosis (PCP)", evidenceNeeded: "BAL PCP PCR+", adjRWValue: 2.0, isModifier: false },
+      { id: 't1-11', tier: 1, category: "Tier 1: Pathogen-Specific", code: "A15.0", description: "TB lung confirmed sputum", evidenceNeeded: "AFB smear+ or MTB PCR+", adjRWValue: 2.0, isModifier: false },
+      // Tier 2
+      { id: 't2-1', tier: 2, category: "Tier 2: Anatomical/Radiological", code: "J18.1", description: "Lobar Pneumonia", evidenceNeeded: "Lobar consolidation on CXR/CT", adjRWValue: 0.8, isModifier: false },
+      { id: 't2-2', tier: 2, category: "Tier 2: Anatomical/Radiological", code: "J18.0", description: "Bronchopneumonia", evidenceNeeded: "Patchy Infiltration on CXR/CT", adjRWValue: 0.6, isModifier: false },
+      { id: 't2-3', tier: 2, category: "Tier 2: Anatomical/Radiological", code: "J18.2", description: "Hypostatic pneumonia", evidenceNeeded: "Bedridden + dependent infiltrate", adjRWValue: 0.6, isModifier: false },
+      // Tier 3
+      { id: 't3-1', tier: 3, category: "Tier 3: Clinical Context & Specifics", code: "J69.0", description: "Aspiration Pneumonia", evidenceNeeded: "Witnessed Aspiration OR Risk Factor + Infiltrate", adjRWValue: 1.2, isModifier: false },
+      // Tier 4
+      { id: 't4-1', tier: 4, category: "Tier 4: Complications & Modifiers", code: "Y95", description: "Hospital-acquired Condition (HAP/VAP)", evidenceNeeded: "Onset > 48hr after admission", adjRWValue: 0.5, isModifier: true },
+      { id: 't4-2', tier: 4, category: "Tier 4: Complications & Modifiers", code: "A41.x", description: "Sepsis, unspecified", evidenceNeeded: "Explicit physician documentation", adjRWValue: 2.5, isModifier: true },
+      { id: 't4-3', tier: 4, category: "Tier 4: Complications & Modifiers", code: "R57.2", description: "Septic shock", evidenceNeeded: "Vasopressor support, Lactate > 2", adjRWValue: 3.0, isModifier: true },
+      // Tier 5
+      { id: 't5-1', tier: 5, category: "Tier 5: Common Important Comorbidities", code: "I10", description: "Essential hypertension", evidenceNeeded: "BP monitored, antihypertensive continued", adjRWValue: 1.0, isModifier: true },
+      { id: 't5-2', tier: 5, category: "Tier 5: Common Important Comorbidities", code: "I50.0", description: "Congestive heart failure", evidenceNeeded: "Diuretic given, fluid balance monitored", adjRWValue: 2.0, isModifier: true },
+      { id: 't5-3', tier: 5, category: "Tier 5: Common Important Comorbidities", code: "E11.0", description: "T2DM with coma", evidenceNeeded: "Glucose monitored, insulin ordered", adjRWValue: 3.0, isModifier: true },
+      { id: 't5-4', tier: 5, category: "Tier 5: Common Important Comorbidities", code: "N17.0", description: "AKI with tubular necrosis", evidenceNeeded: "Cr rise >=1.5x baseline or >=0.3 in 48h", adjRWValue: 4.0, isModifier: true },
+      { id: 't5-5', tier: 5, category: "Tier 5: Common Important Comorbidities", code: "N18.5", description: "CKD stage 5", evidenceNeeded: "Cr/BUN/eGFR documented, nephrotoxic drugs adjusted", adjRWValue: 3.0, isModifier: true },
+      { id: 't5-6', tier: 5, category: "Tier 5: Common Important Comorbidities", code: "I63.9", description: "Cerebral infarction", evidenceNeeded: "Neuro deficit documented, antiplatelet managed", adjRWValue: 3.0, isModifier: true },
+      { id: 't5-7', tier: 5, category: "Tier 5: Common Important Comorbidities", code: "J44.0", description: "COPD with acute lower resp infection", evidenceNeeded: "Bronchodilator given", adjRWValue: 2.0, isModifier: true },
+      { id: 't5-8', tier: 5, category: "Tier 5: Common Important Comorbidities", code: "G81.9", description: "Hemiplegia, unspecified", evidenceNeeded: "Paralysis documented", adjRWValue: 2.5, isModifier: true },
+      { id: 't5-9', tier: 5, category: "Tier 5: Common Important Comorbidities", code: "L89.9", description: "Pressure ulcer (Stage 3/4)", evidenceNeeded: "Wound care documented", adjRWValue: 3.0, isModifier: true }
+    ];
+
+    const state = {
+      selections: new Set()
+    };
+
+    // Load from Local Storage
+    function loadState() {
+      const saved = localStorage.getItem('pneumoniaCoderState');
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          parsed.forEach(id => state.selections.add(id));
+        } catch (e) {
+          console.error("Could not load state", e);
+        }
+      }
+    }
+
+    // Save to Local Storage
+    function saveState() {
+      localStorage.setItem('pneumoniaCoderState', JSON.stringify(Array.from(state.selections)));
+    }
+
+    // Render UI
+    function renderUI() {
+      const container = document.getElementById('tiersContainer');
+      container.innerHTML = '';
+
+      const groupedByTier = codingData.reduce((acc, curr) => {
+        if (!acc[curr.tier]) acc[curr.tier] = { name: curr.category, items: [] };
+        acc[curr.tier].items.push(curr);
+        return acc;
+      }, {});
+
+      Object.keys(groupedByTier).forEach(tierNum => {
+        const tier = groupedByTier[tierNum];
+        
+        // Sort items from Max to Min adjRW
+        tier.items.sort((a, b) => b.adjRWValue - a.adjRWValue);
+
+        const section = document.createElement('section');
+        section.className = 'tier-section';
+        section.id = `tier-${tierNum}-section`;
+
+        const header = document.createElement('div');
+        header.className = 'tier-header';
+        header.innerHTML = `<h3>${tier.name}</h3>`;
+        section.appendChild(header);
+
+        const checkboxGroup = document.createElement('div');
+        checkboxGroup.className = 'checkbox-group';
+
+        tier.items.forEach(item => {
+          const label = document.createElement('label');
+          label.className = 'checkbox-item';
+          
+          const isChecked = state.selections.has(item.id);
+          
+          label.innerHTML = `
+            <input type="checkbox" id="${item.id}" data-tier="${item.tier}" ${isChecked ? 'checked' : ''}>
+            <div class="item-content">
+              <div class="item-title">
+                ${item.description}
+                <span class="badge badge-code">${item.code}</span>
+                <span class="badge">+${item.adjRWValue.toFixed(2)} adjRW</span>
+              </div>
+              <div class="item-evidence">Evid: ${item.evidenceNeeded}</div>
+            </div>
+          `;
+          checkboxGroup.appendChild(label);
+        });
+
+        section.appendChild(checkboxGroup);
+        container.appendChild(section);
+      });
+
+      attachEvents();
+      applyLogic();
+    }
+
+    function attachEvents() {
+      const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+      checkboxes.forEach(cb => {
+        cb.addEventListener('change', (e) => {
+          if (e.target.checked) {
+            state.selections.add(e.target.id);
+          } else {
+            state.selections.delete(e.target.id);
+          }
+          saveState();
+          applyLogic();
+        });
+      });
+
+      document.getElementById('btnReset').addEventListener('click', () => {
+        state.selections.clear();
+        saveState();
+        renderUI();
+      });
+
+      document.getElementById('btnCopy').addEventListener('click', () => {
+        const text = document.getElementById('summaryText').innerText;
+        if(text.includes('==== DISCHARGE SUMMARY ====')){
+            navigator.clipboard.writeText(text).then(() => {
+                const notif = document.getElementById('notification');
+                notif.classList.add('show');
+                setTimeout(() => notif.classList.remove('show'), 2000);
+            });
+        }
+      });
+    }
+
+    // Apply Tier mutual exclusion and update Summary
+    function applyLogic() {
+      const selectedItems = codingData.filter(d => state.selections.has(d.id));
+      
+      // Tier 1 vs Tier 2 Mutual Exclusion
+      const hasTier1 = selectedItems.some(d => d.tier === 1);
+      const tier2Section = document.getElementById('tier-2-section');
+      const tier2Checkboxes = document.querySelectorAll('input[data-tier="2"]');
+
+      if (hasTier1) {
+        if(tier2Section) tier2Section.classList.add('disabled');
+        tier2Checkboxes.forEach(cb => {
+          if(cb.checked) {
+              cb.checked = false;
+              state.selections.delete(cb.id);
+          }
+          cb.disabled = true;
+        });
+        // Re-evaluate selected items since we might have just unchecked Tier 2
+        saveState();
+      } else {
+        if(tier2Section) tier2Section.classList.remove('disabled');
+        tier2Checkboxes.forEach(cb => {
+          cb.disabled = false;
+        });
+      }
+
+      updateSummary(codingData.filter(d => state.selections.has(d.id)));
+    }
+
+    // Update the Summary Box
+    function updateSummary(selected) {
+      const rwDisplay = document.getElementById('totalRwValue');
+      const summaryText = document.getElementById('summaryText');
+
+      if (selected.length === 0) {
+        rwDisplay.innerText = "0.00";
+        summaryText.innerText = "Select clinical evidence above to generate documentation...";
+        return;
+      }
+
+      // Calc Total RW
+      const totalRw = selected.reduce((sum, item) => sum + item.adjRWValue, 0);
+      rwDisplay.innerText = totalRw.toFixed(2);
+
+      // Separate Primary Diag and Secondary Diag
+      // Primary is the lowest tier (1, 2 or 3) selected that is not a modifier
+      const baseDiagnoses = selected.filter(d => !d.isModifier).sort((a,b) => a.tier - b.tier);
+      const modifiers = selected.filter(d => d.isModifier);
+
+      let primaryDiag = null;
+      let secondaryDiags = [];
+
+      if (baseDiagnoses.length > 0) {
+        primaryDiag = baseDiagnoses[0];
+        secondaryDiags = baseDiagnoses.slice(1).concat(modifiers);
+      } else {
+        secondaryDiags = modifiers;
+      }
+
+      let summary = "==== DISCHARGE SUMMARY ====\n\n";
+
+      if (primaryDiag) {
+        summary += `[PRIMARY DIAGNOSIS]\n`;
+        summary += `${primaryDiag.code} - ${primaryDiag.description}\n\n`;
+      }
+
+      if (secondaryDiags.length > 0) {
+        summary += `[SECONDARY DIAGNOSES & MODIFIERS]\n`;
+        secondaryDiags.forEach(d => {
+          summary += `${d.code} - ${d.description}\n`;
+        });
+        summary += `\n`;
+      }
+
+      summary += `[REQUIRED CLINICAL DOCUMENTATION / EVIDENCE]\n`;
+      selected.forEach(d => {
+        summary += `- ${d.evidenceNeeded} (Supports ${d.code})\n`;
+      });
+
+      summary += `\n===========================`;
+      summaryText.innerText = summary;
+    }
+
+    // Initialize App
+    document.addEventListener('DOMContentLoaded', () => {
+      loadState();
+      renderUI();
+    });
+  </script>
+</body>
+</html>

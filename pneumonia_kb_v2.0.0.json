@@ -1,0 +1,932 @@
+{
+  "_meta": {
+    "version": "2.0.0",
+    "frozen": true,
+    "frozen_date": "2026-04-22",
+    "description": "Pneumonia ICD-10-TM coding KB — validated against TDRG V6.3.3 Vol1+2+Appendix F1",
+    "tdrg_version": "6.3.3",
+    "mdc": "4",
+    "dc": "0452",
+    "pdc": "4C",
+    "grouper_note": "ALL PDC-4C codes group to DC0452. adjRW is driven ENTIRELY by PCL (comorbidity complexity), NOT by principal diagnosis specificity. Code quality (J15.x > J18.9) serves audit defensibility and epidemiology, not DRG tier.",
+    "source_validation": [
+      "TDRG V6.3.3 Vol1 Appendix G — DRG weight table",
+      "TDRG V6.3.3 Vol2 MDC4 — grouper logic pages 61-71",
+      "TDRG V6.3.3 Supplement F1 (VSup11-55) — DCL table"
+    ]
+  },
+  "drg_weight_table": {
+    "dc": "0452",
+    "description": "Respiratory Infection/Inflammation",
+    "note": "PCL = Patient Complexity Level, aggregated from all comorbidity DCL values",
+    "tiers": [
+      {
+        "drg": "04520",
+        "pcl_range": "0-1",
+        "ccc_label": "wo sig CCC",
+        "rw": 0.5661,
+        "wt_los": "not available",
+        "typical": "J18.9 alone, no comorbidities"
+      },
+      {
+        "drg": "04521",
+        "pcl_range": "2-3",
+        "ccc_label": "w min CCC",
+        "rw": 0.9877,
+        "typical": "I10 alone"
+      },
+      {
+        "drg": "04522",
+        "pcl_range": "4-5",
+        "ccc_label": "w mod CCC",
+        "rw": 1.8974,
+        "typical": "I10 + E119, or I500 alone"
+      },
+      {
+        "drg": "04523",
+        "pcl_range": "6",
+        "ccc_label": "w maj CCC",
+        "rw": 3.1233,
+        "typical": "I630, N170, or I10+I500+DM"
+      },
+      {
+        "drg": "04524",
+        "pcl_range": "7-9",
+        "ccc_label": "w ext CCC",
+        "rw": 5.1197,
+        "typical": "N171(DCL4)+I630+I500 — highest complexity"
+      }
+    ],
+    "rw_multiplier_note": "RW 5.1197 / RW 0.5661 = 9.0x difference between ext vs wo sig CCC"
+  },
+  "principal_diagnosis": {
+    "coding_axis": "CODE QUALITY — audit defensibility + epidemiology data (does NOT affect DRG tier directly)",
+    "all_codes_map_to_pdc": "4C",
+    "tiers": [
+      {
+        "tier": 1,
+        "label": "Pathogen-specific",
+        "rationale": "Highest specificity — triggered by confirmed microbiology",
+        "trigger_requirement": "Positive culture / PCR / serology DOCUMENTED in notes",
+        "codes": [
+          {
+            "code": "J13",
+            "desc": "Streptococcus pneumoniae",
+            "nlp_th": [
+              "เชื้อนิวโมคอคคัส",
+              "Strep pneumo",
+              "pneumococcal"
+            ],
+            "trigger": "blood/sputum cx Streptococcus pneumoniae"
+          },
+          {
+            "code": "J14",
+            "desc": "Haemophilus influenzae",
+            "nlp_th": [
+              "ฮีโมฟิลุส",
+              "H.influenzae"
+            ],
+            "trigger": "cx H.influenzae"
+          },
+          {
+            "code": "J15.0",
+            "desc": "Klebsiella pneumoniae",
+            "nlp_th": [
+              "เคลบเซียลลา",
+              "Klebsiella",
+              "KP"
+            ],
+            "trigger": "cx Klebsiella pneumoniae"
+          },
+          {
+            "code": "J15.1",
+            "desc": "Pseudomonas aeruginosa",
+            "nlp_th": [
+              "ซูโดโมแนส",
+              "Pseudomonas",
+              "PA"
+            ],
+            "trigger": "cx Pseudomonas aeruginosa"
+          },
+          {
+            "code": "J15.2",
+            "desc": "Staphylococcus aureus",
+            "nlp_th": [
+              "สแตป",
+              "Staph aureus",
+              "MRSA",
+              "MSSA"
+            ],
+            "trigger": "cx S.aureus"
+          },
+          {
+            "code": "J15.5",
+            "desc": "Escherichia coli",
+            "nlp_th": [
+              "อีโคไล",
+              "E.coli"
+            ],
+            "trigger": "cx E.coli"
+          },
+          {
+            "code": "J15.6",
+            "desc": "Other Gram-negative bacteria",
+            "nlp_th": [
+              "แกรมลบ",
+              "gram-negative"
+            ],
+            "trigger": "cx GNB (not KP/PA/Ecoli)"
+          },
+          {
+            "code": "J15.7",
+            "desc": "Mycoplasma pneumoniae",
+            "nlp_th": [
+              "ไมโคพลาสมา",
+              "mycoplasma",
+              "atypical"
+            ],
+            "trigger": "Mycoplasma IgM/PCR+"
+          },
+          {
+            "code": "J16.0",
+            "desc": "Chlamydial pneumonia",
+            "nlp_th": [
+              "คลามัยเดีย",
+              "chlamydia"
+            ],
+            "trigger": "Chlamydia serology+"
+          },
+          {
+            "code": "J12.0",
+            "desc": "Adenoviral pneumonia",
+            "nlp_th": [
+              "อะดีโนไวรัส",
+              "adenovirus"
+            ],
+            "trigger": "adeno PCR+"
+          },
+          {
+            "code": "J12.1",
+            "desc": "RSV pneumonia",
+            "nlp_th": [
+              "RSV",
+              "respiratory syncytial"
+            ],
+            "trigger": "RSV PCR+"
+          },
+          {
+            "code": "J12.3",
+            "desc": "hMPV pneumonia",
+            "nlp_th": [
+              "hMPV",
+              "metapneumovirus"
+            ],
+            "trigger": "hMPV PCR+"
+          },
+          {
+            "code": "J09",
+            "desc": "Avian influenza pneumonia",
+            "nlp_th": [
+              "ไข้หวัดนก",
+              "H5N1",
+              "H7N9"
+            ],
+            "trigger": "avian flu confirmed"
+          },
+          {
+            "code": "J10.0",
+            "desc": "Seasonal influenza with pneumonia",
+            "nlp_th": [
+              "ไข้หวัดใหญ่",
+              "influenza",
+              "flu A",
+              "flu B",
+              "Influenza A/B"
+            ],
+            "trigger": "flu PCR/RDT+"
+          },
+          {
+            "code": "A48.1",
+            "desc": "Legionnaires disease",
+            "nlp_th": [
+              "ลีเจียนแนร์",
+              "Legionella",
+              "UAg legionella"
+            ],
+            "trigger": "Legionella UAg+ or cx+"
+          },
+          {
+            "code": "B44.0",
+            "desc": "Invasive pulmonary aspergillosis",
+            "nlp_th": [
+              "แอสเปอร์จิลลัส",
+              "Aspergillus",
+              "IPA",
+              "galactomannan"
+            ],
+            "trigger": "galactomannan+ or cx Aspergillus"
+          },
+          {
+            "code": "B45.0",
+            "desc": "Pulmonary cryptococcosis",
+            "nlp_th": [
+              "คริปโตคอคคัส",
+              "Cryptococcus",
+              "CrAg"
+            ],
+            "trigger": "CrAg+ or India ink+"
+          },
+          {
+            "code": "B59",
+            "desc": "Pneumocystosis (PCP)",
+            "nlp_th": [
+              "PCP",
+              "Pneumocystis",
+              "นิวโมซิสติส"
+            ],
+            "trigger": "BAL PCP PCR+ or empirical PCP Rx in HIV"
+          },
+          {
+            "code": "A15.0",
+            "desc": "TB lung confirmed sputum",
+            "nlp_th": [
+              "วัณโรค",
+              "TB",
+              "AFB+",
+              "MTB"
+            ],
+            "trigger": "AFB smear+ or MTB PCR+"
+          }
+        ]
+      },
+      {
+        "tier": 2,
+        "label": "Anatomical/Radiological",
+        "rationale": "No organism confirmed — use CXR/CT pattern",
+        "trigger_requirement": "Radiology report MUST document pattern (lobar vs bronchopneumonia)",
+        "codes": [
+          {
+            "code": "J18.1",
+            "desc": "Lobar pneumonia, unspecified",
+            "nlp_th": [
+              "lobar",
+              "ปอดอักเสบทั้งกลีบ",
+              "consolidation ทั้งกลีบ"
+            ],
+            "trigger": "CXR/CT: lobar consolidation"
+          },
+          {
+            "code": "J18.0",
+            "desc": "Bronchopneumonia, unspecified",
+            "nlp_th": [
+              "bronchopneumonia",
+              "ปอดอักเสบกระจาย",
+              "patchy consolidation"
+            ],
+            "trigger": "CXR/CT: patchy bilateral"
+          },
+          {
+            "code": "J18.2",
+            "desc": "Hypostatic pneumonia",
+            "nlp_th": [
+              "hypostatic",
+              "ปอดอักเสบจากนอนนาน",
+              "dependent"
+            ],
+            "trigger": "bedridden + dependent infiltrate"
+          }
+        ]
+      },
+      {
+        "tier": 3,
+        "label": "Clinical context / mechanism",
+        "rationale": "Mechanism documented even without organism",
+        "guardrails": {
+          "J69.0": "MUST document aspiration event or risk factors explicitly — NEVER auto-suggest",
+          "J17.x": "Use when underlying disease known to cause pneumonia (coded as dagger/asterisk)"
+        },
+        "codes": [
+          {
+            "code": "J69.0",
+            "desc": "Pneumonitis due to food/vomit (aspiration)",
+            "nlp_th": [
+              "สำลัก",
+              "aspiration",
+              "inhale vomitus",
+              "ดูดสำลัก"
+            ],
+            "trigger": "witnessed aspiration OR documented aspiration risk (stroke/PEG/dysphagia) + infiltrate",
+            "requires_explicit_documentation": true
+          },
+          {
+            "code": "J69.1",
+            "desc": "Pneumonitis due to oils/essences",
+            "nlp_th": [
+              "สำลักน้ำมัน",
+              "lipoid pneumonia"
+            ],
+            "trigger": "oil aspiration documented"
+          },
+          {
+            "code": "J17.0",
+            "desc": "Pneumonia in bacterial diseases elsewhere",
+            "nlp_th": [
+              "ปอดอักเสบในโรค"
+            ],
+            "trigger": "pneumonia complicating another bacterial disease (dagger code)"
+          },
+          {
+            "code": "J17.2",
+            "desc": "Pneumonia in mycoses",
+            "nlp_th": [],
+            "trigger": "fungal disease with pulmonary involvement"
+          },
+          {
+            "code": "J85.1",
+            "desc": "Abscess of lung with pneumonia",
+            "nlp_th": [
+              "ฝีในปอด",
+              "lung abscess",
+              "necrotizing pneumonia"
+            ],
+            "trigger": "CT: cavitary lesion + pneumonia"
+          }
+        ]
+      },
+      {
+        "tier": 4,
+        "label": "Unspecified (last resort)",
+        "rationale": "Use ONLY when all Tier 1-3 criteria unmet — triggers mandatory review",
+        "codes": [
+          {
+            "code": "J18.9",
+            "desc": "Pneumonia, unspecified",
+            "nlp_th": [
+              "ปอดอักเสบ",
+              "pneumonia"
+            ],
+            "mandatory_review_questions": [
+              "Was any culture or PCR sent? Result?",
+              "What does CXR/CT report describe (lobar/patchy/diffuse)?",
+              "Any aspiration risk documented (stroke, NGT, PEG, dysphagia)?",
+              "HAP/VAP criteria met (admit >48h or on ventilator)?",
+              "Any organism suspected clinically (atypical features, travel, immunocompromised)?"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "comorbidity_tier": {
+    "tier": 5,
+    "label": "Comorbidities — PCL drivers",
+    "coding_axis": "FINANCIAL — this tier determines DRG 04520-04524 assignment",
+    "coding_rule": "Code ALL conditions actively managed or affecting care this admission. Must be documented in the current notes — not just PMH.",
+    "dcl_explanation": {
+      "DCL_1": "CC — minor complexity contribution, PCL +1",
+      "DCL_2": "CC/MCC — moderate, PCL +2",
+      "DCL_3": "MCC — major, PCL +3",
+      "DCL_4": "MCC high — critical, PCL +4",
+      "DCL_5": "MCC highest — rare extreme, PCL +5"
+    },
+    "domains": [
+      {
+        "domain": "Cardiovascular",
+        "conditions": [
+          {
+            "code": "I10",
+            "desc": "Essential hypertension",
+            "dcl_max": 2,
+            "pcl_weight": "CC/MCC",
+            "nlp_th": [
+              "ความดันโลหิตสูง",
+              "HT",
+              "hypertension",
+              "BP สูง"
+            ],
+            "documentation_anchor": "BP monitored, antihypertensive continued"
+          },
+          {
+            "code": "I50.0",
+            "desc": "Congestive heart failure",
+            "dcl_max": 2,
+            "pcl_weight": "CC/MCC",
+            "nlp_th": [
+              "หัวใจวาย",
+              "CHF",
+              "heart failure",
+              "น้ำท่วมปอด",
+              "pulmonary edema"
+            ],
+            "documentation_anchor": "diuretic given, fluid balance monitored"
+          },
+          {
+            "code": "I50.1",
+            "desc": "Left ventricular failure",
+            "dcl_max": 2,
+            "pcl_weight": "CC/MCC",
+            "nlp_th": [
+              "LV failure",
+              "หัวใจซีกซ้ายวาย",
+              "LVSD"
+            ],
+            "documentation_anchor": "echo LVEF documented, ACEi/BB managed"
+          },
+          {
+            "code": "I48.0",
+            "desc": "Atrial fibrillation, paroxysmal",
+            "dcl_max": 2,
+            "pcl_weight": "CC",
+            "nlp_th": [
+              "AF",
+              "atrial fibrillation",
+              "หัวใจเต้นผิดจังหวะ",
+              "ใจสั่น"
+            ],
+            "documentation_anchor": "rate/rhythm monitored, anticoagulation documented"
+          },
+          {
+            "code": "I48.4",
+            "desc": "Atrial fibrillation, persistent",
+            "dcl_max": 4,
+            "pcl_weight": "MCC_high",
+            "nlp_th": [
+              "persistent AF",
+              "chronic AF",
+              "AF ถาวร"
+            ],
+            "documentation_anchor": "rate control, anticoagulation managed this admission"
+          },
+          {
+            "code": "I48.9",
+            "desc": "Atrial fibrillation, unspecified",
+            "dcl_max": 4,
+            "pcl_weight": "MCC_high",
+            "nlp_th": [
+              "AF",
+              "atrial fibrillation"
+            ],
+            "documentation_anchor": "AF managed this admission"
+          },
+          {
+            "code": "I25.1",
+            "desc": "ASHD of native coronary artery",
+            "dcl_max": 2,
+            "pcl_weight": "CC/MCC",
+            "nlp_th": [
+              "โรคหลอดเลือดหัวใจ",
+              "CAD",
+              "IHD",
+              "angina"
+            ],
+            "documentation_anchor": "antiplatelet/statin continued, cardiac monitoring"
+          },
+          {
+            "code": "I25.3",
+            "desc": "Aneurysm of heart",
+            "dcl_max": 2,
+            "pcl_weight": "CC/MCC",
+            "nlp_th": [
+              "LV aneurysm"
+            ],
+            "documentation_anchor": "echo finding documented"
+          }
+        ]
+      },
+      {
+        "domain": "Metabolic / Renal",
+        "conditions": [
+          {
+            "code": "E11.0",
+            "desc": "T2DM with coma",
+            "dcl_max": 3,
+            "pcl_weight": "MCC",
+            "nlp_th": [
+              "เบาหวาน",
+              "DM",
+              "น้ำตาลสูง",
+              "hyperglycemia"
+            ],
+            "documentation_anchor": "glucose monitored, insulin ordered"
+          },
+          {
+            "code": "E11.5",
+            "desc": "T2DM with peripheral circulation",
+            "dcl_max": 2,
+            "pcl_weight": "CC/MCC",
+            "nlp_th": [
+              "DM peripheral vascular",
+              "เบาหวานหลอดเลือด"
+            ],
+            "documentation_anchor": "peripheral pulse checked, wound care"
+          },
+          {
+            "code": "E11.6",
+            "desc": "T2DM with other specified complications",
+            "dcl_max": 2,
+            "pcl_weight": "CC/MCC",
+            "nlp_th": [
+              "เบาหวานมีภาวะแทรกซ้อน",
+              "DM complication"
+            ],
+            "documentation_anchor": "DM complication managed"
+          },
+          {
+            "code": "E11.9",
+            "desc": "T2DM without complications",
+            "dcl_max": 1,
+            "pcl_weight": "CC",
+            "nlp_th": [
+              "เบาหวาน",
+              "DM",
+              "T2DM",
+              "NIDDM"
+            ],
+            "documentation_anchor": "glucose monitored, antidiabetic continued"
+          },
+          {
+            "code": "N18.5",
+            "desc": "CKD stage 5",
+            "dcl_max": 3,
+            "pcl_weight": "MCC",
+            "nlp_th": [
+              "ไตวายเรื้อรัง",
+              "CKD",
+              "ESRD",
+              "ฟอกไต",
+              "dialysis"
+            ],
+            "documentation_anchor": "Cr/BUN/eGFR documented, nephrotoxic drugs adjusted"
+          },
+          {
+            "code": "N18.3",
+            "desc": "CKD stage 3",
+            "dcl_max": 2,
+            "pcl_weight": "CC/MCC",
+            "nlp_th": [
+              "CKD stage 3",
+              "ไตเรื้อรังระยะ3"
+            ],
+            "documentation_anchor": "eGFR documented, drug dose adjusted"
+          },
+          {
+            "code": "N18.4",
+            "desc": "CKD stage 4",
+            "dcl_max": 2,
+            "pcl_weight": "CC/MCC",
+            "nlp_th": [
+              "CKD stage 4",
+              "ไตเรื้อรังระยะ4"
+            ],
+            "documentation_anchor": "eGFR documented, nephrology consulted"
+          },
+          {
+            "code": "N17.0",
+            "desc": "AKI with tubular necrosis",
+            "dcl_max": 4,
+            "pcl_weight": "MCC_high",
+            "nlp_th": [
+              "ไตวายเฉียบพลัน",
+              "AKI",
+              "acute kidney injury",
+              "Cr เพิ่ม"
+            ],
+            "documentation_anchor": "AKI criteria met: Cr rise ≥1.5x baseline or ≥0.3 in 48h"
+          },
+          {
+            "code": "N17.9",
+            "desc": "AKI unspecified",
+            "dcl_max": 3,
+            "pcl_weight": "MCC",
+            "nlp_th": [
+              "AKI",
+              "ไตวายเฉียบพลัน"
+            ],
+            "documentation_anchor": "Cr documented, nephrotoxins held"
+          },
+          {
+            "code": "E66.0",
+            "desc": "Obesity due to excess calories",
+            "dcl_max": 1,
+            "pcl_weight": "CC",
+            "nlp_th": [
+              "อ้วน",
+              "obesity",
+              "BMI สูง"
+            ],
+            "documentation_anchor": "BMI documented in notes"
+          }
+        ]
+      },
+      {
+        "domain": "Respiratory comorbidities",
+        "conditions": [
+          {
+            "code": "J44.0",
+            "desc": "COPD with acute lower resp infection",
+            "dcl_max": 2,
+            "pcl_weight": "CC/MCC",
+            "nlp_th": [
+              "COPD",
+              "ถุงลมโป่งพอง",
+              "emphysema",
+              "chronic bronchitis"
+            ],
+            "documentation_anchor": "COPD exacerbation features documented, bronchodilator given",
+            "coding_warning": "If COPD is the principal reason for admission, consider J44.0 as PDx instead of J18.x"
+          },
+          {
+            "code": "J44.1",
+            "desc": "COPD with acute exacerbation",
+            "dcl_max": 2,
+            "pcl_weight": "CC/MCC",
+            "nlp_th": [
+              "COPD exacerbation",
+              "AECOPD"
+            ],
+            "documentation_anchor": "AECOPD criteria documented"
+          },
+          {
+            "code": "J45.9",
+            "desc": "Asthma, unspecified",
+            "dcl_max": 1,
+            "pcl_weight": "CC",
+            "nlp_th": [
+              "หอบหืด",
+              "asthma",
+              "bronchial asthma"
+            ],
+            "documentation_anchor": "inhaler continued, wheeze documented"
+          },
+          {
+            "code": "J84.1",
+            "desc": "Interstitial pulmonary disease with fibrosis",
+            "dcl_max": 2,
+            "pcl_weight": "CC/MCC",
+            "nlp_th": [
+              "IPF",
+              "ILD",
+              "interstitial lung disease",
+              "พังผืดในปอด"
+            ],
+            "documentation_anchor": "ILD known, CT pattern documented"
+          }
+        ]
+      },
+      {
+        "domain": "Neurological / Aspiration risk",
+        "conditions": [
+          {
+            "code": "I63.9",
+            "desc": "Cerebral infarction, unspecified",
+            "dcl_max": 3,
+            "pcl_weight": "MCC",
+            "nlp_th": [
+              "สมองขาดเลือด",
+              "stroke",
+              "CVA",
+              "infarction"
+            ],
+            "documentation_anchor": "neuro deficit documented, antiplatelet managed"
+          },
+          {
+            "code": "I63.3",
+            "desc": "Cerebral infarction from thrombosis",
+            "dcl_max": 3,
+            "pcl_weight": "MCC",
+            "nlp_th": [
+              "ischemic stroke",
+              "cerebral thrombosis"
+            ],
+            "documentation_anchor": "neurological status monitored"
+          },
+          {
+            "code": "G30.9",
+            "desc": "Alzheimer disease, unspecified",
+            "dcl_max": 1,
+            "pcl_weight": "CC",
+            "nlp_th": [
+              "อัลไซเมอร์",
+              "dementia",
+              "สมองเสื่อม"
+            ],
+            "documentation_anchor": "cognitive status documented, safety measures noted"
+          },
+          {
+            "code": "G20",
+            "desc": "Parkinson disease",
+            "dcl_max": 1,
+            "pcl_weight": "CC",
+            "nlp_th": [
+              "พาร์กินสัน",
+              "Parkinson",
+              "PD"
+            ],
+            "documentation_anchor": "swallowing assessment, levodopa continued"
+          },
+          {
+            "code": "R13.1",
+            "desc": "Dysphagia",
+            "dcl_max": 1,
+            "pcl_weight": "CC",
+            "nlp_th": [
+              "กลืนลำบาก",
+              "dysphagia",
+              "กลืนไม่ได้"
+            ],
+            "documentation_anchor": "speech therapy consult, diet modification ordered",
+            "aspiration_pair": "J69.0"
+          }
+        ]
+      },
+      {
+        "domain": "Immunocompromised / Oncology",
+        "conditions": [
+          {
+            "code": "B20",
+            "desc": "HIV disease",
+            "dcl_max": 3,
+            "pcl_weight": "MCC",
+            "nlp_th": [
+              "HIV",
+              "เอดส์",
+              "AIDS",
+              "CD4"
+            ],
+            "documentation_anchor": "CD4/VL documented, OI prophylaxis noted"
+          },
+          {
+            "code": "Z94.0",
+            "desc": "Kidney transplant status",
+            "dcl_max": 2,
+            "pcl_weight": "CC/MCC",
+            "nlp_th": [
+              "ปลูกถ่ายไต",
+              "renal transplant",
+              "immunosuppressant"
+            ],
+            "documentation_anchor": "tacrolimus/cyclosporine levels monitored"
+          },
+          {
+            "code": "Z94.1",
+            "desc": "Heart transplant status",
+            "dcl_max": 2,
+            "pcl_weight": "CC/MCC",
+            "nlp_th": [
+              "ปลูกถ่ายหัวใจ",
+              "heart transplant"
+            ],
+            "documentation_anchor": "immunosuppressant managed"
+          },
+          {
+            "code": "Z79.6",
+            "desc": "Long-term use of immunosuppressants",
+            "dcl_max": 2,
+            "pcl_weight": "CC/MCC",
+            "nlp_th": [
+              "steroid",
+              "prednisolone",
+              "immunosuppressant",
+              "methotrexate"
+            ],
+            "documentation_anchor": "immunosuppressant dose and duration documented"
+          }
+        ]
+      }
+    ]
+  },
+  "pcl_estimation_guide": {
+    "description": "Rough PCL estimation for UI — NOT a DRG grouper replacement",
+    "method": "Sum max DCL of each active comorbidity coded this admission",
+    "drg_map": [
+      {
+        "pcl": "0-1",
+        "drg": "04520",
+        "rw": 0.5661,
+        "example": "No comorbidities"
+      },
+      {
+        "pcl": "2-3",
+        "drg": "04521",
+        "rw": 0.9877,
+        "example": "I10 only"
+      },
+      {
+        "pcl": "4-5",
+        "drg": "04522",
+        "rw": 1.8974,
+        "example": "I10 + E11.9"
+      },
+      {
+        "pcl": "6",
+        "drg": "04523",
+        "rw": 3.1233,
+        "example": "I63.9, or I10+I50+E11"
+      },
+      {
+        "pcl": "7-9",
+        "drg": "04524",
+        "rw": 5.1197,
+        "example": "N17.0(DCL4) + I63.9 + I50"
+      }
+    ],
+    "rw_delta_9x": "Max vs min RW = 9x difference — comorbidity documentation is the primary revenue lever"
+  },
+  "clinical_guardrails": [
+    {
+      "code": "J69.0",
+      "rule": "NEVER suggest without explicit aspiration documentation — witnessed event OR aspiration risk factor + compatible infiltrate"
+    },
+    {
+      "code": "A41.x",
+      "rule": "Sepsis requires explicit physician documentation — NLP may FLAG for confirmation only"
+    },
+    {
+      "code": "J44.0",
+      "rule": "If COPD is principal reason for admission, consider as PDx not CC — do not double-count"
+    },
+    {
+      "code": "N17.x",
+      "rule": "AKI must meet KDIGO criteria: Cr ≥1.5x baseline in 7d, or ≥0.3 rise in 48h, or UO <0.5ml/kg/h for 6h"
+    }
+  ],
+  "nlp_trigger_flat": [
+    {
+      "keyword_th": "เพาะเชื้อ",
+      "keyword_en": "culture",
+      "suggests_tier": 1,
+      "action": "check_culture_result"
+    },
+    {
+      "keyword_th": "ไข้หวัดใหญ่",
+      "keyword_en": "influenza",
+      "suggests_code": "J10.0"
+    },
+    {
+      "keyword_th": "สำลัก",
+      "keyword_en": "aspiration",
+      "suggests_code": "J69.0",
+      "requires_confirmation": true
+    },
+    {
+      "keyword_th": "lobar consolidation",
+      "keyword_en": "lobar",
+      "suggests_code": "J18.1"
+    },
+    {
+      "keyword_th": "ความดันโลหิตสูง",
+      "keyword_en": "hypertension",
+      "suggests_code": "I10",
+      "tier": 5
+    },
+    {
+      "keyword_th": "หัวใจวาย",
+      "keyword_en": "heart failure",
+      "suggests_code": "I50.0",
+      "tier": 5
+    },
+    {
+      "keyword_th": "เบาหวาน",
+      "keyword_en": "diabetes",
+      "suggests_code": "E11.9",
+      "tier": 5
+    },
+    {
+      "keyword_th": "ไตวายเฉียบพลัน",
+      "keyword_en": "AKI",
+      "suggests_code": "N17.9",
+      "tier": 5
+    },
+    {
+      "keyword_th": "ไตวายเรื้อรัง",
+      "keyword_en": "CKD",
+      "suggests_code": "N18.5",
+      "tier": 5
+    },
+    {
+      "keyword_th": "AF",
+      "keyword_en": "atrial fibrillation",
+      "suggests_code": "I48.9",
+      "tier": 5
+    },
+    {
+      "keyword_th": "COPD",
+      "keyword_en": "COPD",
+      "suggests_code": "J44.0",
+      "tier": 5,
+      "warning": "Consider as PDx if principal reason for admission"
+    },
+    {
+      "keyword_th": "HIV",
+      "keyword_en": "HIV",
+      "suggests_code": "B20",
+      "tier": 5
+    },
+    {
+      "keyword_th": "วัณโรค",
+      "keyword_en": "TB",
+      "suggests_code": "A15.0",
+      "tier": 1
+    }
+  ]
+}
